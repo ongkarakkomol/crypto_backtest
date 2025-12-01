@@ -126,15 +126,8 @@ PAIRS = [
     # best performers
     'CFX/BTC',
     'THETA/BTC',
-    # worst performers
-    'FLOKI/BTC',
-    '2Z/BTC',
-    'DEXE/BTC',
-    'PYTH/BTC',
     'ENS/BTC',
-    'H/BTC'
-    'TWT/BTC',
-    'SAND/BTC',
+    # worst performers
 ]
 
 PAIRS = list(dict.fromkeys(PAIRS))
