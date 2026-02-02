@@ -10,7 +10,7 @@ import ccxt, pandas as pd, numpy as np, time, logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
 EXCHANGE = 'binance'
-TIMEFRAME = '1w'
+TIMEFRAME = '1m'
 
 PAIRS = [
     'BTC', 'ETH', 'USDT', 'BNB', 'XRP', 'USDC', 'SOL', 'TRX', 'DOGE', 'ADA',
