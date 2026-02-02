@@ -24,9 +24,8 @@ PAIRS = [
     'XTZ', 'TUSD', 'PENGU', 'CHZ', 'STX', 'STABLE', 'FDUSD', 'OP', 'MORPHO', 'FET',
     'EURC', 'CRV', 'VIRTUAL', 'LIT', '2Z', 'JST', 'RIVER', 'IMX', 'INJ', 'LDO',
     # other not in top 100 by volume
-    'SPX', 'AERO', 'FLOKI', 'TIA', 'ETHFI', 'JASMY', 'GRT', 'IOTA',
     # best performers
-    'CFX','THETA','ENS'
+    'CFX','THETA','ENS','TIA', 'IOTA',
     # worst performers
 ]
 
