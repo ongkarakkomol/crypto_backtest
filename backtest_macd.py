@@ -10,23 +10,24 @@ import ccxt, pandas as pd, numpy as np, time, logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
 EXCHANGE = 'binance'
-TIMEFRAME = '1m'
+TIMEFRAME = '1d'
 
 PAIRS = [
-    'BTC', 'ETH', 'USDT', 'BNB', 'XRP', 'USDC', 'SOL', 'TRX', 'DOGE', 'ADA',
-    'BCH', 'HYPE', 'XMR', 'LEO', 'CC', 'LINK', 'USDe', 'XLM', 'DAI', 'ZEC', 
-    'USD1', 'LTC', 'AVAX', 'SUI', 'SHIB', 'HBAR', 'PYUSD', 'WLFI', 'TON', 'CRO',
-    'DOT', 'UNI', 'XAUt', 'MNT', 'BGB', 'PAXG', 'TAO', 'AAVE', 'OKB', 'PEPE',
-    'M', 'USDG', 'NEAR', 'ETC', 'ICP', 'SKY', 'ASTER', 'MYX', 'PI', 'ONDO',
-    'RLUSD', 'KCS', 'WLD', 'POL', 'ENA', 'USDD', 'TRUMP', 'APT', 'ATOM', 'GT',
-    'PUMP', 'ALGO', 'KAS', 'FLR', 'QNT', 'ARB', 'RENDER', 'FIL', 'NIGHT', 'U',
-    'VET', 'XDC', 'BONK', 'JUP', 'SEI', 'DASH', 'ZRO', 'NEXO', 'IP', 'CAKE',
-    'XTZ', 'TUSD', 'PENGU', 'CHZ', 'STX', 'STABLE', 'FDUSD', 'OP', 'MORPHO', 'FET',
-    'EURC', 'CRV', 'VIRTUAL', 'LIT', '2Z', 'JST', 'RIVER', 'IMX', 'INJ', 'LDO',
-    # other not in top 100 by volume
+    'BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'USDC', 'SOL', 'TRX', 'DOGE', 'ADA',
+    'BCH', 'LEO', 'HYPE', 'CC', 'LINK', 'XMR', 'USDe', 'XLM', 'DAI', 'USD1',
+    'HBAR', 'LTC', 'PYUSD', 'AVAX', 'ZEC', 'SUI', 'SHIB', 'WLFI', 'CRO', 'TON',
+    'XAUt', 'DOT', 'PAXG', 'UNI', 'MNT', 'TAO', 'M', 'ASTER', 'AAVE', 'USDG',
+    'OKB', 'PI', 'SKY', 'PEPE', 'BGB', 'NEAR', 'ICP', 'KITE', 'STABLE', 'POL',
+    'ENA', 'USDD', 'TRUMP', 'APT', 'ATOM', 'GT', 'PUMP', 'ALGO', 'KAS', 'FLR',
+    'QNT', 'ARB', 'RENDER', 'FIL', 'NIGHT', 'U', 'VET', 'XDC', 'BONK', 'JUP',
+    'SEI', 'DASH', 'ZRO', 'NEXO', 'IP', 'CAKE', 'XTZ', 'TUSD', 'PENGU', 'CHZ',
+    'STX', 'FDUSD', 'OP', 'MORPHO', 'FET', 'EURC', 'CRV', 'VIRTUAL', 'LIT', '2Z',
+    'JST', 'RIVER', 'IMX', 'INJ', 'LDO', 'PIPPIN', 'KITE', 'SNX', 'POWER', 'KAS'
+    # other not in top 100 by volume 
     # best performers
-    'CFX','THETA','ENS','TIA', 'IOTA',
+    ,'CFX','THETA','ENS','TIA', 'IOTA'
     # worst performers
+    ,'MYX','RLUSD','WLD','KCS'
 ]
 
 # default = BTC pair
