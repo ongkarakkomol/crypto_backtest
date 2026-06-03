@@ -13,21 +13,20 @@ EXCHANGE = 'binance'
 TIMEFRAME = '1d'
 
 PAIRS = [
-    'BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'USDC', 'SOL', 'TRX', 'DOGE', 'ADA',
-    'BCH', 'LEO', 'HYPE', 'CC', 'LINK', 'XMR', 'USDe', 'XLM', 'DAI', 'USD1',
-    'HBAR', 'LTC', 'PYUSD', 'AVAX', 'ZEC', 'SUI', 'SHIB', 'WLFI', 'CRO', 'TON',
-    'XAUt', 'DOT', 'PAXG', 'UNI', 'MNT', 'TAO', 'M', 'ASTER', 'AAVE', 'USDG',
-    'OKB', 'PI', 'SKY', 'PEPE', 'BGB', 'NEAR', 'ICP', 'KITE', 'STABLE', 'POL',
-    'ENA', 'USDD', 'TRUMP', 'APT', 'ATOM', 'GT', 'PUMP', 'ALGO', 'KAS', 'FLR',
-    'QNT', 'ARB', 'RENDER', 'FIL', 'NIGHT', 'U', 'VET', 'XDC', 'BONK', 'JUP',
-    'SEI', 'DASH', 'ZRO', 'NEXO', 'IP', 'CAKE', 'XTZ', 'TUSD', 'PENGU', 'CHZ',
-    'STX', 'FDUSD', 'OP', 'MORPHO', 'FET', 'EURC', 'CRV', 'VIRTUAL', 'LIT', '2Z',
-    'JST', 'RIVER', 'IMX', 'INJ', 'LDO', 'PIPPIN', 'KITE', 'SNX', 'POWER', 'KAS'
+    'BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'USDC', 'SOL', 'TRX', 'DOGE', 'HYPE',
+    'LEO', 'BCH', 'ADA', 'XMR', 'LINK', 'ZEC', 'CC', 'XLM', 'DAI', 'USD1',
+    'LTC', 'AVAX', 'USDe', 'HBAR', 'M', 'SHIB', 'SUI', 'PYUSD', 'TON', 'CRO',
+    'TAO', 'USDG', 'USDG', 'PAXG', 'MNT', 'UNI', 'DOT', 'SKY', 'PI', 'WLFI',
+    'OKB', 'ASTER', 'NEAR', 'PEPE', 'RLUSD', 'USDD', 'AAVE', 'BGB', 'ETC', 'ONDO',
+    'ICP', 'KCS', 'U', 'POL', 'ALGO', 'ATOM', 'MORPHO', 'ENA', 'DEXE', 'KAS',
+    'RENDER', 'QNT', 'GT', 'APT', 'WLD', 'ARB', 'STABLE', 'JST', 'FIL', 'FLR',
+    'PENGU', 'VET', 'PUMP', 'JUP', 'XDC', 'NEXO', 'BONK', 'TRUMP', 'NIGHT', 'SIREN',
+    'H', 'TUSD', 'DASH', 'CAKE', 'VIRTUAL', 'FET', 'ZRO', 'EURC', 'CHZ', 'AERO',
+    'VVV', 'EDGE', 'STX', 'SEI', 'FDUSD', 'XTZ', 'LUNAC', 'INJ', 'MON', 'SUN',
     # other not in top 100 by volume 
     # best performers
-    ,'CFX','THETA','ENS','TIA', 'IOTA'
+    'CFX', 'THETA', 'ENS', 'TIA', 'IOTA', 'OP', 'LDO'
     # worst performers
-    ,'MYX','RLUSD','WLD','KCS'
 ]
 
 # default = BTC pair
@@ -107,20 +106,8 @@ def main():
 
             df = fetch_ohlcv(ex, sym, TIMEFRAME)
 
-            # ---- fallback to USDT if BTC pair insufficient ----
-            if df.empty or len(df) < 200:
-                base = sym.split('/')[0]
-                usdt_pair = f"{base}/USDT"
-                if usdt_pair in symbols:
-                    logging.info(f"{sym} insufficient data → fallback {usdt_pair}")
-                    df = fetch_ohlcv(ex, usdt_pair, TIMEFRAME)
-                    sym = usdt_pair
-                else:
-                    continue
-
             if df.empty or len(df) < 200:
                 continue
-            # ---------------------------------------------------
 
             pnl = backtest_zero_cross(df)
             if pnl > 0:
