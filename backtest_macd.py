@@ -5,35 +5,47 @@
 # - ขายเมื่อ MACD < 0 จาก >= 0
 # - PnL เป็น % (BTC pair = relative vs BTC, USDT pair = absolute)
 
-import ccxt, pandas as pd, numpy as np, time, logging
+import ccxt, pandas as pd, numpy as np, time, logging, json
+from urllib.request import Request, urlopen
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
 EXCHANGE = 'binance'
 TIMEFRAME = '1d'
+CMC_TOP_URL = (
+    'https://api.coinmarketcap.com/data-api/v3/cryptocurrency/listing'
+    '?start=1&limit={limit}&sortBy=market_cap&sortType=desc&convert=USD'
+    '&cryptoType=all&tagType=all'
+)
 
-PAIRS = [
-    'BTC', 'ETH', 'USDT', 'XRP', 'BNB', 'USDC', 'SOL', 'TRX', 'DOGE', 'HYPE',
-    'LEO', 'BCH', 'ADA', 'XMR', 'LINK', 'ZEC', 'CC', 'XLM', 'DAI', 'USD1',
-    'LTC', 'AVAX', 'USDe', 'HBAR', 'M', 'SHIB', 'SUI', 'PYUSD', 'TON', 'CRO',
-    'TAO', 'USDG', 'USDG', 'PAXG', 'MNT', 'UNI', 'DOT', 'SKY', 'PI', 'WLFI',
-    'OKB', 'ASTER', 'NEAR', 'PEPE', 'RLUSD', 'USDD', 'AAVE', 'BGB', 'ETC', 'ONDO',
-    'ICP', 'KCS', 'U', 'POL', 'ALGO', 'ATOM', 'MORPHO', 'ENA', 'DEXE', 'KAS',
-    'RENDER', 'QNT', 'GT', 'APT', 'WLD', 'ARB', 'STABLE', 'JST', 'FIL', 'FLR',
-    'PENGU', 'VET', 'PUMP', 'JUP', 'XDC', 'NEXO', 'BONK', 'TRUMP', 'NIGHT', 'SIREN',
-    'H', 'TUSD', 'DASH', 'CAKE', 'VIRTUAL', 'FET', 'ZRO', 'EURC', 'CHZ', 'AERO',
-    'VVV', 'EDGE', 'STX', 'SEI', 'FDUSD', 'XTZ', 'LUNAC', 'INJ', 'MON', 'SUN',
-    # other not in top 100 by volume 
-    # best performers
-    'CFX', 'THETA', 'ENS', 'TIA', 'IOTA', 'OP', 'LDO'
-    # worst performers
-]
+def fetch_cmc_top_symbols(limit=100):
+    url = CMC_TOP_URL.format(limit=limit)
+    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
 
-# default = BTC pair
-PAIRS = [pair if '/' in pair else f"{pair}/BTC" for pair in PAIRS]
-PAIRS = list(dict.fromkeys(PAIRS))
+    try:
+        with urlopen(req, timeout=20) as resp:
+            payload = json.loads(resp.read().decode('utf-8'))
 
-logging.info(f"{len(PAIRS)} unique pairs to test")
+        rows = payload.get('data', {}).get('cryptoCurrencyList', [])
+        symbols = []
+        for row in rows:
+            sym = row.get('symbol')
+            if isinstance(sym, str) and sym.strip():
+                symbols.append(sym.strip())
+
+        symbols = list(dict.fromkeys(symbols))
+        if not symbols:
+            raise ValueError('CMC returned no symbols')
+
+        logging.info(f"loaded {len(symbols)} symbols from CMC top list")
+        return symbols
+    except Exception as e:
+        logging.warning(f"CMC fetch failed ({e})")
+        return []
+
+def build_btc_pairs(symbols):
+    pairs = [symbol if '/' in symbol else f"{symbol}/BTC" for symbol in symbols]
+    return list(dict.fromkeys(pairs))
 
 def macd(series, fast=12, slow=26, signal=9):
     ema_fast = series.ewm(span=fast, adjust=False).mean()
@@ -94,14 +106,25 @@ def fetch_ohlcv(exchange, symbol, timeframe):
 
 def main():
     ex = getattr(ccxt, EXCHANGE)({'enableRateLimit': True})
-    ex.load_markets()
-    symbols = set(ex.symbols)
+    markets = ex.load_markets()
+    spot_symbols = {
+        symbol for symbol, market in markets.items()
+        if market.get('spot') and market.get('active', True)
+    }
+
+    cmc_symbols = fetch_cmc_top_symbols(limit=100)
+    if not cmc_symbols:
+        logging.error("No CMC symbols available. Abort run.")
+        return
+
+    pairs = build_btc_pairs(cmc_symbols)
+    logging.info(f"{len(pairs)} unique pairs to test")
 
     results = []
 
-    for sym in PAIRS:
+    for sym in pairs:
         try:
-            if sym not in symbols:
+            if sym not in spot_symbols:
                 continue
 
             df = fetch_ohlcv(ex, sym, TIMEFRAME)
